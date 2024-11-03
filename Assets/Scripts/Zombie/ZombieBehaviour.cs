@@ -5,11 +5,13 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public class ZombieBehaviour : MonoBehaviour
 {
-    public Transform player; // Ссылка на игрока
+    [SerializeField] private Transform _player; // Ссылка на игрока
     [SerializeField] private float _fleeDistance = 10f; // Расстояние, на которое зомби будет убегать
     [SerializeField] private float _healDistance;
     [SerializeField] private float _roamRadius = 10f;
-    private NavMeshAgent agent; // NavMeshAgent для перемещения зомби
+
+    private NavMeshAgent _agent; // NavMeshAgent для перемещения зомби
+    private ZombieHumanChange _skinChange;
 
     private ZombieState _state;
 
@@ -17,7 +19,8 @@ public class ZombieBehaviour : MonoBehaviour
 
     private void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
+        _agent = GetComponent<NavMeshAgent>();
+        _skinChange = GetComponent<ZombieHumanChange>();
 
         _state = ZombieState.Stay;
         Invoke("Roam", Random.Range(0.2f, 6f));
@@ -26,7 +29,7 @@ public class ZombieBehaviour : MonoBehaviour
     private void FixedUpdate()
     {
         // Расстояние до игрока
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+        float distanceToPlayer = Vector3.Distance(transform.position, _player.position);
 
         if (_state == ZombieState.Healing)
         {
@@ -38,13 +41,13 @@ public class ZombieBehaviour : MonoBehaviour
         if (distanceToPlayer < _fleeDistance)
         {
             // Направление от игрока
-            Vector3 fleeDirection = (transform.position - player.position).normalized;
+            Vector3 fleeDirection = (transform.position - _player.position).normalized;
 
             // Вычисляем новую точку, куда будет убегать зомби
             Vector3 fleeTarget = transform.position + fleeDirection * _fleeDistance;
 
             // Установка целевой точки для NavMeshAgent
-            agent.SetDestination(fleeTarget);
+            _agent.SetDestination(fleeTarget);
 
             Debug.DrawLine(transform.position, fleeTarget, Color.blue);
 
@@ -80,7 +83,7 @@ public class ZombieBehaviour : MonoBehaviour
         NavMesh.SamplePosition(randomDirection, out hit, _roamRadius, NavMesh.AllAreas);
 
         // Перемещаем зомби к новой позиции
-        agent.SetDestination(hit.position);
+        _agent.SetDestination(hit.position);
         Debug.DrawLine(transform.position, hit.position, Color.blue);
 
         _roamCoroutine = StartCoroutine(RoamCor());
@@ -88,7 +91,7 @@ public class ZombieBehaviour : MonoBehaviour
 
     private IEnumerator RoamCor()
     {
-        yield return new WaitUntil(() => agent.remainingDistance <= 0.3f);
+        yield return new WaitUntil(() => _agent.remainingDistance <= 0.3f);
 
         _state = ZombieState.Stay;
 
@@ -114,7 +117,7 @@ public class ZombieBehaviour : MonoBehaviour
     {
         _state = ZombieState.Healing;
 
-        agent.ResetPath();
+        _agent.ResetPath();
     }
 
     public void StopHeal(bool isHealed)
@@ -122,6 +125,10 @@ public class ZombieBehaviour : MonoBehaviour
         if (!isHealed)
         {
             _state = ZombieState.Runaway;
+        }
+        else
+        {
+            _skinChange.SwitchState(false);
         }
     }
 }

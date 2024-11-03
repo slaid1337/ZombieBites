@@ -7,6 +7,7 @@ public class PlayerController : Singletone<PlayerController>
     [SerializeField] private GameBalance _gameBalance;
     [SerializeField] private Canvas _statusCanvas;
     [SerializeField] private CircleIndicator _circleIndicator;
+    [SerializeField] private float _followRadius;
 
     private bool _isHealing;
     private float _healValue;
@@ -42,6 +43,7 @@ public class PlayerController : Singletone<PlayerController>
 
         if (other.TryGetComponent<ZombieBehaviour>(out zombie))
         {
+            if (!zombie.isActiveAndEnabled) return;
             _healingZombie = zombie;
 
             Heal();
@@ -54,6 +56,7 @@ public class PlayerController : Singletone<PlayerController>
 
         if (other.TryGetComponent<ZombieBehaviour>(out zombie))
         {
+            if (!zombie.isActiveAndEnabled) return;
             StopHeal(false);
 
             _healingZombie = null;
@@ -80,5 +83,16 @@ public class PlayerController : Singletone<PlayerController>
         _healingZombie.StopHeal(isHealed);
 
         _statusCanvas.gameObject.SetActive(false);
+    }
+
+    public float GetFollowRadius()
+    {
+        return _followRadius;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, _followRadius);
     }
 }
