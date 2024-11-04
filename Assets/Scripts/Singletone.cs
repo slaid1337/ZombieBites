@@ -11,7 +11,7 @@ public class Singletone<T> : MonoBehaviour where T : MonoBehaviour
         {
             if (m_instance == null)
             {
-                m_instance = GameObject.FindObjectOfType<T>();
+                m_instance = FindObjectOfType<T>(true);
 
                 if (m_instance == null)
                 {

@@ -5,6 +5,9 @@ public class ZombieHumanChange : MonoBehaviour
     [SerializeField] private GameObject _zombie;
     [SerializeField] private GameObject _human;
 
+    [SerializeField] private Collider _zombieCollider;
+    [SerializeField] private Collider _humanCollider;
+
     private ZombieBehaviour _zombieScript;
     private HumanBehaviour _humanScript;
 
@@ -23,6 +26,11 @@ public class ZombieHumanChange : MonoBehaviour
 
             _zombieScript.enabled = true;
             _humanScript.enabled = false;
+
+            _zombieCollider.enabled = true;
+            _humanCollider.enabled = false;
+
+            HumanPool.Instance.RemoveHuman(_humanScript);
         }
         else
         {
@@ -31,6 +39,11 @@ public class ZombieHumanChange : MonoBehaviour
 
             _zombieScript.enabled = false;
             _humanScript.enabled = true;
+
+            _zombieCollider.enabled = false;
+            _humanCollider.enabled = true;
+
+            HumanPool.Instance.AddHuman(_humanScript);
         }
     }
 }

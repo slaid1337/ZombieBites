@@ -8,6 +8,7 @@ public class PlayerController : Singletone<PlayerController>
     [SerializeField] private Canvas _statusCanvas;
     [SerializeField] private CircleIndicator _circleIndicator;
     [SerializeField] private float _followRadius;
+    [SerializeField] private float _saveRadius;
 
     private bool _isHealing;
     private float _healValue;
@@ -20,6 +21,8 @@ public class PlayerController : Singletone<PlayerController>
 
         _suitController = GetComponent<PlayerSuitController>();
         _moveController = GetComponent<PlayerMovement>();
+
+        _suitController.Init(_gameBalance.SuitStrength);
     }
 
     private void FixedUpdate()
@@ -43,6 +46,7 @@ public class PlayerController : Singletone<PlayerController>
 
         if (other.TryGetComponent<ZombieBehaviour>(out zombie))
         {
+            if (CanDamage()) return;
             if (!zombie.isActiveAndEnabled) return;
             _healingZombie = zombie;
 
@@ -56,9 +60,9 @@ public class PlayerController : Singletone<PlayerController>
 
         if (other.TryGetComponent<ZombieBehaviour>(out zombie))
         {
+            if (_healingZombie == null) return;
             if (!zombie.isActiveAndEnabled) return;
             StopHeal(false);
-
             _healingZombie = null;
         }
     }
@@ -85,14 +89,38 @@ public class PlayerController : Singletone<PlayerController>
         _statusCanvas.gameObject.SetActive(false);
     }
 
+    public bool CanDamage()
+    {
+        return _suitController.InDanger();
+    }
+
     public float GetFollowRadius()
     {
         return _followRadius;
     }
 
+    public float GetSaveRadius()
+    {
+        return _saveRadius;
+    }
+
+    public void Damage(float damage)
+    {
+        _suitController.DamageSuit(damage);
+
+        if (_suitController.IsGone())
+        {
+            print("Loose");
+        }
+    }
+
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, _followRadius);
+
+        Gizmos.DrawWireSphere(transform.position, _saveRadius);
     }
+#endif
 }

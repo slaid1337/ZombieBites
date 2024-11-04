@@ -7,8 +7,10 @@ public class PlayerSuitController : MonoBehaviour
     [SerializeField] private CircleIndicator _circleIndicator;
     private float _suitValue;
 
-    private void Awake()
+    public void Init(float startValue)
     {
+        _startSuitValue = startValue;
+
         _suitValue = _startSuitValue;
     }
 
@@ -29,5 +31,25 @@ public class PlayerSuitController : MonoBehaviour
 
             _suitValue = Mathf.Clamp(_suitValue, 0, _startSuitValue);
         }
+    }
+
+    public void DamageSuit(float damage)
+    {
+        _suitValue -= damage;
+        _suitValue = Mathf.Clamp(_suitValue, 0, _startSuitValue);
+    }
+
+    public bool InDanger()
+    {
+        if (_suitValue <= _startSuitValue / 2) return true;
+
+        return false;
+    }
+
+    public bool IsGone()
+    {
+        if (_suitValue == 0) return true;
+
+        return false;
     }
 }
