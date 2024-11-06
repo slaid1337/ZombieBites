@@ -8,7 +8,7 @@ public class CameraFollow : MonoBehaviour
 
     private void Awake()
     {
-        offset = player.InverseTransformPoint(transform.position);
+        //offset = player.InverseTransformPoint(transform.position);
     }
 
     private void FixedUpdate()
@@ -21,5 +21,11 @@ public class CameraFollow : MonoBehaviour
             // Плавно перемещаем камеру к цели
             transform.position = Vector3.Lerp(transform.position, targetCamPos, smoothing * Time.deltaTime);
         }
+    }
+
+    [ContextMenu("CalculateOffset")]
+    private void CalculateOffset()
+    {
+        offset = player.InverseTransformPoint(transform.position);
     }
 }
