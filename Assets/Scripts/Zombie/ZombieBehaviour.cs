@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Windows.WebCam;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class ZombieBehaviour : MonoBehaviour
@@ -43,7 +44,7 @@ public class ZombieBehaviour : MonoBehaviour
 
         _state = ZombieState.Stay;
 
-        _animator.SetInteger("IdleIndex", Random.Range(0, 1));
+        _animator.SetFloat("IdleIndex", Random.Range(0f, 1f));
     }
 
     private void FixedUpdate()
@@ -58,8 +59,15 @@ public class ZombieBehaviour : MonoBehaviour
 
         if (distanceToPlayer < _fleeDistance)
         {
+            _agent.speed = 3.5f;
+
             if (_player.CanDamage())
             {
+                if (_state != ZombieState.PursuitPlayer)
+                {
+                    _animator.SetTrigger("IsRun");
+                }
+
                 _agent.SetDestination(_player.transform.position);
 
                 _state = ZombieState.PursuitPlayer;
@@ -70,7 +78,7 @@ public class ZombieBehaviour : MonoBehaviour
             Vector3 fleeDirection = (transform.position - _player.transform.position).normalized;
 
             // Вычисляем новую точку, куда будет убегать зомби
-            Vector3 fleeTarget = transform.position + fleeDirection * _fleeDistance;
+            Vector3 fleeTarget = transform.position + fleeDirection * _fleeDistance * 1.5f;
 
             // Установка целевой точки для NavMeshAgent
             _agent.SetDestination(fleeTarget);
@@ -87,6 +95,8 @@ public class ZombieBehaviour : MonoBehaviour
             if (_roamCoroutine != null )
             {
                 StopCoroutine( _roamCoroutine );
+
+                _roamCoroutine = null;
             }
         }
         else
@@ -101,6 +111,8 @@ public class ZombieBehaviour : MonoBehaviour
             if (_state == ZombieState.Pursuit)
             {
                 _agent.SetDestination(_pursuitHuman.transform.position);
+
+                _agent.speed = 3f;
             }
 
             if (_state == ZombieState.Stay || _state == ZombieState.Runaway || _state == ZombieState.PursuitPlayer)
@@ -130,6 +142,8 @@ public class ZombieBehaviour : MonoBehaviour
                     _pursuitHuman.OnDangerExit.AddListener(ClearPursuit);
                     _pursuitHuman.OnZombify.AddListener(ClearPursuit);
 
+                    _animator.SetTrigger("IsRun");
+
                     _agent.SetDestination(_pursuitHuman.transform.position);
 
                     if (_roamCoroutine != null)
@@ -146,13 +160,21 @@ public class ZombieBehaviour : MonoBehaviour
     private void Roam()
     {
         if (_roamCoroutine != null) return;
+
+        _agent.ResetPath();
+        _agent.velocity = Vector3.zero;
+        _agent.speed = 0.5f;
+
+        _animator.SetTrigger("IsIdle");
+
         _roamCoroutine = StartCoroutine(RoamCor());
     }
 
     private IEnumerator RoamCor()
     {
-        yield return new WaitForSeconds(Random.Range(0.2f, 6f));
+        yield return new WaitForSeconds(Random.Range(1f, 3f));
 
+        _animator.ResetTrigger("IsIdle");
         _animator.SetTrigger("IsWalk");
 
         // Определяем случайную позицию в пределах радиуса
@@ -167,10 +189,10 @@ public class ZombieBehaviour : MonoBehaviour
         _agent.SetDestination(hit.position);
         Debug.DrawLine(transform.position, hit.position, Color.blue);
 
-        yield return new WaitUntil(() => _agent.remainingDistance <= 0.3f);
+        
+        yield return new WaitUntil(() => Vector3.Distance(hit.position, transform.position) <= 1.1f);
 
-        _state = ZombieState.Stay;
-        _animator.SetInteger("IdleIndex", Random.Range(0, 1));
+        _animator.SetFloat("IdleIndex", Random.Range(0f, 1f));
         _animator.SetTrigger("IsIdle");
 
         // Вызываем метод снова через случайный интервал
@@ -194,7 +216,7 @@ public class ZombieBehaviour : MonoBehaviour
     public void Heal()
     {
         _state = ZombieState.Healing;
-
+        _animator.SetTrigger("IsIdle");
         _agent.ResetPath();
         _agent.velocity = Vector3.zero;
 
@@ -235,6 +257,8 @@ public class ZombieBehaviour : MonoBehaviour
                 _agent.velocity = Vector3.zero;
                 _state = ZombieState.Zombification;
 
+                _animator.SetTrigger("IsAttack");
+
                 if (_roamCoroutine != null)
                 {
                     StopCoroutine(_roamCoroutine );
@@ -255,6 +279,7 @@ public class ZombieBehaviour : MonoBehaviour
                 _agent.velocity = Vector3.zero;
 
                 _biteCoroutine = StartCoroutine(BiteCor());
+
 
                 if (_roamCoroutine != null)
                 {
@@ -287,6 +312,8 @@ public class ZombieBehaviour : MonoBehaviour
             if (player.CanDamage())
             {
                 _state = ZombieState.Stay;
+
+                _animator.SetTrigger("IsAttack");
 
                 if (_biteCoroutine != null)
                 {
