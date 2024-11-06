@@ -2,10 +2,11 @@
 
 public class PlayerMovement : MonoBehaviour
 {
-    public float moveSpeed = 5f; // Скорость передвижения
-    public float jumpForce = 5f; // Сила прыжка
+    public float moveSpeed;
     private Rigidbody rb;
     private InputSystemControlls.PlayerActions _input;
+
+    public Vector3 MoveDirection;
 
     private void Start()
     {
@@ -13,6 +14,8 @@ public class PlayerMovement : MonoBehaviour
         _input.Enable();
 
         rb = GetComponent<Rigidbody>();
+
+        moveSpeed *= -1;
     }
 
     private void Update()
@@ -27,8 +30,10 @@ public class PlayerMovement : MonoBehaviour
         float moveHorizontal = move.x;
         float moveVertical = move.y;
 
-        // Вектор движения
         Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical).normalized;
+
+        MoveDirection = movement;
+
         rb.linearVelocity = new Vector3(movement.x * moveSpeed, rb.linearVelocity.y, movement.z * moveSpeed);
     }
 }

@@ -7,6 +7,7 @@ public class GameBalance : ScriptableObject
     public float MoveSpeed;
     public float HealSpeed;
     public float SuitStrength;
+    public float SavingSpeed;
 
     [Header("Zombie")]
     public float Damage;

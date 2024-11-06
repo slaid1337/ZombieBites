@@ -15,5 +15,6 @@ MonoBehaviour:
   MoveSpeed: 1
   HealSpeed: 1
   SuitStrength: 200
+  SavingSpeed: 1
   Damage: 20
   BiteCooldown: 1

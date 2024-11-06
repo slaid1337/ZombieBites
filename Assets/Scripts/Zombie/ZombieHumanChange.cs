@@ -30,6 +30,8 @@ public class ZombieHumanChange : MonoBehaviour
             _zombieCollider.enabled = true;
             _humanCollider.enabled = false;
 
+            _zombieScript.SelectState();
+
             HumanPool.Instance.RemoveHuman(_humanScript);
         }
         else

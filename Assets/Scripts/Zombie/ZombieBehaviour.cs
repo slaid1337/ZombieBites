@@ -14,6 +14,8 @@ public class ZombieBehaviour : MonoBehaviour
 
     [SerializeField] private GameBalance _gameBalance;
 
+    [SerializeField] private Animator _animator;
+
     private NavMeshAgent _agent; // NavMeshAgent для перемещения зомби
     private ZombieHumanChange _skinChange;
 
@@ -40,6 +42,8 @@ public class ZombieBehaviour : MonoBehaviour
         _damage = _gameBalance.Damage;
 
         _state = ZombieState.Stay;
+
+        _animator.SetInteger("IdleIndex", Random.Range(0, 1));
     }
 
     private void FixedUpdate()
@@ -73,7 +77,12 @@ public class ZombieBehaviour : MonoBehaviour
 
             Debug.DrawLine(transform.position, fleeTarget, Color.blue);
 
-            _state = ZombieState.Runaway;
+            if (_state != ZombieState.Runaway)
+            {
+                _state = ZombieState.Runaway;
+
+                _animator.SetTrigger("IsRun");
+            }
 
             if (_roamCoroutine != null )
             {
@@ -94,7 +103,6 @@ public class ZombieBehaviour : MonoBehaviour
                 _agent.SetDestination(_pursuitHuman.transform.position);
             }
 
-            // Если игрок далеко, можно остановить зомби или добавить другую логику
             if (_state == ZombieState.Stay || _state == ZombieState.Runaway || _state == ZombieState.PursuitPlayer)
             {
                 _state = ZombieState.Roam;
@@ -107,11 +115,17 @@ public class ZombieBehaviour : MonoBehaviour
 
                 if (dangerHumans.Count > 0 )
                 {
+                    foreach (var item in dangerHumans)
+                    {
+                        if (Vector3.Distance(item.transform.position, transform.position) <= _roamRadius)
+                        {
+                            _pursuitHuman = item;
+                        }
+                    }
+
+                    if (_pursuitHuman == null) return;
+
                     _state = ZombieState.Pursuit;
-
-                    HumanBehaviour pursuitHuman = dangerHumans[Random.Range(0, dangerHumans.Count)];
-
-                    _pursuitHuman = pursuitHuman;
 
                     _pursuitHuman.OnDangerExit.AddListener(ClearPursuit);
                     _pursuitHuman.OnZombify.AddListener(ClearPursuit);
@@ -139,6 +153,8 @@ public class ZombieBehaviour : MonoBehaviour
     {
         yield return new WaitForSeconds(Random.Range(0.2f, 6f));
 
+        _animator.SetTrigger("IsWalk");
+
         // Определяем случайную позицию в пределах радиуса
         Vector3 randomDirection = Random.insideUnitSphere * _roamRadius;
         randomDirection += transform.position;
@@ -154,6 +170,8 @@ public class ZombieBehaviour : MonoBehaviour
         yield return new WaitUntil(() => _agent.remainingDistance <= 0.3f);
 
         _state = ZombieState.Stay;
+        _animator.SetInteger("IdleIndex", Random.Range(0, 1));
+        _animator.SetTrigger("IsIdle");
 
         // Вызываем метод снова через случайный интервал
         _roamCoroutine = StartCoroutine(RoamCor());
@@ -211,8 +229,6 @@ public class ZombieBehaviour : MonoBehaviour
         {
             if (human == _pursuitHuman)
             {
-                _pursuitHuman.OnDangerExit.RemoveListener(ClearPursuit);
-                _pursuitHuman.OnZombify.RemoveListener(ClearPursuit);
 
                 human.Zombification();
                 _agent.ResetPath();
@@ -298,11 +314,18 @@ public class ZombieBehaviour : MonoBehaviour
 
     public void ClearPursuit()
     {
+        if (_state != ZombieState.Pursuit) return;
+
         _pursuitHuman.OnDangerExit.RemoveListener(ClearPursuit);
         _pursuitHuman.OnZombify.RemoveListener(ClearPursuit);
 
         _pursuitHuman = null;
 
+        _state = ZombieState.Stay;
+    }
+
+    public void SelectState()
+    {
         _state = ZombieState.Stay;
     }
 }

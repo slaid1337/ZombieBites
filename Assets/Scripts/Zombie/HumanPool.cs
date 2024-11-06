@@ -4,7 +4,6 @@ using UnityEngine;
 public class HumanPool : Singletone<HumanPool>
 {
     private List<HumanBehaviour> _humans;
-    private int _dangerHumansCount;
 
     public override void Awake()
     {
@@ -26,6 +25,11 @@ public class HumanPool : Singletone<HumanPool>
         }
 
         return dangerHumans;
+    }
+
+    public int GetHumansCount()
+    {
+        return _humans.Count;
     }
 
     public void AddHuman(HumanBehaviour human)

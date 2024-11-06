@@ -26,6 +26,16 @@ public class HumanBehaviour : MonoBehaviour
         _skinChange = GetComponent<ZombieHumanChange>();
     }
 
+    private void OnEnable()
+    {
+        _player.OnHumanSave.AddListener(OnSave);
+    }
+
+    private void OnDisable()
+    {
+        _player.OnHumanSave.RemoveListener(OnSave);
+    }
+
     private void FixedUpdate()
     {
         if (_isCollected)
@@ -78,19 +88,25 @@ public class HumanBehaviour : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        SaveZone zone = null;
+        
+    }
 
-        if (other.TryGetComponent<SaveZone>(out zone))
-        {
-            _agent.SetDestination(zone.GetRandomPoint());
+    public void OnSave(SaveZone zone)
+    {
+        if (_isCollected) return;
 
-            _isCollected = true;
+        _agent.SetDestination(zone.GetRandomPoint());
 
-            HumanPool.Instance.RemoveHuman(this);
-            OnDangerExit?.Invoke();
+        _isCollected = true;
 
-            print("Collect");
-        }
+        HumanPool.Instance.RemoveHuman(this);
+        OnDangerExit?.Invoke();
+
+        LevelController.Instance.AddHuman();
+
+        print("Collect");
+
+        _player.OnHumanSave.RemoveListener(OnSave);
     }
 
     public void Zombification()
@@ -121,7 +137,7 @@ public class HumanBehaviour : MonoBehaviour
         }
         else
         {
-            _agent.areaMask = 8;
+            _agent.areaMask = 5;
             OnZombify?.Invoke();
             _agent.speed = 3.5f;
             _isZombifying = false;
