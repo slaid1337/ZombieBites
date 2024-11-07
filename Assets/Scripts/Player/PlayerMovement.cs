@@ -14,8 +14,6 @@ public class PlayerMovement : MonoBehaviour
         _input.Enable();
 
         rb = GetComponent<Rigidbody>();
-
-        moveSpeed *= -1;
     }
 
     private void Update()

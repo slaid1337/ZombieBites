@@ -89,6 +89,8 @@ public class ZombieBehaviour : MonoBehaviour
             {
                 _state = ZombieState.Runaway;
 
+                print("run");
+                _animator.ResetTrigger("IsIdle");
                 _animator.SetTrigger("IsRun");
             }
 
@@ -104,7 +106,7 @@ public class ZombieBehaviour : MonoBehaviour
             if (_state == ZombieState.Zombification)
             {
                 _agent.ResetPath();
-
+                _animator.SetTrigger("IsAttack");
                 return;
             }
 
@@ -232,15 +234,17 @@ public class ZombieBehaviour : MonoBehaviour
     {
         if (!isHealed)
         {
-            _state = ZombieState.Runaway;
+            _state = ZombieState.Stay;
         }
         else
         {
             _agent.areaMask = 13;
             _agent.speed = 2f;
             _skinChange.SwitchState(false);
-            _state = ZombieState.Runaway;
+            _state = ZombieState.Stay;
         }
+
+        _animator.ResetTrigger("IsIdle");
     }
 
     private void OnTriggerEnter(Collider other)
@@ -251,11 +255,11 @@ public class ZombieBehaviour : MonoBehaviour
         {
             if (human == _pursuitHuman)
             {
+                _pursuitHuman.OnDangerExit.RemoveListener(ClearPursuit);
 
                 human.Zombification();
-                _agent.ResetPath();
-                _agent.velocity = Vector3.zero;
-                _state = ZombieState.Zombification;
+                
+                StartCoroutine(ZombificationCor());
 
                 _animator.SetTrigger("IsAttack");
 
@@ -280,7 +284,6 @@ public class ZombieBehaviour : MonoBehaviour
 
                 _biteCoroutine = StartCoroutine(BiteCor());
 
-
                 if (_roamCoroutine != null)
                 {
                     StopCoroutine(_roamCoroutine);
@@ -299,8 +302,8 @@ public class ZombieBehaviour : MonoBehaviour
         {
             if (human == _pursuitHuman)
             {
-                _pursuitHuman.OnDangerExit.AddListener(ClearPursuit);
-                _pursuitHuman.OnZombify.AddListener(ClearPursuit);
+                ClearPursuit();
+
                 human.StopZombification(false);
             }
         }
@@ -313,7 +316,7 @@ public class ZombieBehaviour : MonoBehaviour
             {
                 _state = ZombieState.Stay;
 
-                _animator.SetTrigger("IsAttack");
+                _animator.ResetTrigger("IsIdle");
 
                 if (_biteCoroutine != null)
                 {
@@ -329,6 +332,8 @@ public class ZombieBehaviour : MonoBehaviour
     {
         BitePlayer();
 
+        _animator.SetTrigger("IsAttack");
+
         yield return new WaitForSeconds(_gameBalance.BiteCooldown);
 
         _biteCoroutine = StartCoroutine(BiteCor());
@@ -341,7 +346,11 @@ public class ZombieBehaviour : MonoBehaviour
 
     public void ClearPursuit()
     {
-        if (_state != ZombieState.Pursuit) return;
+        if (_state != ZombieState.Pursuit && _state != ZombieState.Zombification) return;
+
+        print("cleare purs");
+
+        _animator.ResetTrigger("IsAttack");
 
         _pursuitHuman.OnDangerExit.RemoveListener(ClearPursuit);
         _pursuitHuman.OnZombify.RemoveListener(ClearPursuit);
@@ -349,6 +358,15 @@ public class ZombieBehaviour : MonoBehaviour
         _pursuitHuman = null;
 
         _state = ZombieState.Stay;
+    }
+
+    public IEnumerator ZombificationCor()
+    {
+        yield return new WaitUntil(() => Vector3.Distance(_pursuitHuman.transform.position, transform.position) <= 1.1f);
+
+        _state = ZombieState.Zombification;
+        _agent.ResetPath();
+        _agent.velocity = Vector3.zero;
     }
 
     public void SelectState()
