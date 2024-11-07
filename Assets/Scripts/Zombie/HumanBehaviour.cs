@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
@@ -10,12 +11,16 @@ public class HumanBehaviour : MonoBehaviour
     [SerializeField] private CircleIndicator _circleIndicator;
     private ZombieHumanChange _skinChange;
 
+    [SerializeField] private Animator _animator;
+
     private float _zombifictionValue;
     private bool _isZombifying;
 
     private bool _isCollected;
 
-    private NavMeshAgent _agent; // NavMeshAgent для перемещения зомби
+    private NavMeshAgent _agent;
+
+    private bool _isRunPlayer;
 
     public UnityEvent OnDangerExit;
     public UnityEvent OnZombify;
@@ -43,6 +48,15 @@ public class HumanBehaviour : MonoBehaviour
             return;
         }
 
+        if (!LevelController.Instance.IsPlay())
+        {
+            _agent.isStopped = true;
+
+            return;
+        }
+
+        _agent.isStopped = false;
+
         if (_isZombifying)
         {
             _zombifictionValue += Time.fixedDeltaTime;
@@ -65,10 +79,23 @@ public class HumanBehaviour : MonoBehaviour
             // Установка целевой точки для NavMeshAgent
             _agent.SetDestination(_player.transform.position);
 
+            if (!_isRunPlayer)
+            {
+                _animator.SetTrigger("IsRun");
+            }
+
+            _isRunPlayer = true;
         }
         else
         {
             _agent.ResetPath();
+
+            if (_isRunPlayer)
+            {
+                _animator.SetTrigger("IsIdle");
+            }
+
+            _isRunPlayer = false;
         }
     }
 
@@ -86,16 +113,20 @@ public class HumanBehaviour : MonoBehaviour
         return false;
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        
-    }
-
     public void OnSave(SaveZone zone)
     {
         if (_isCollected) return;
 
-        _agent.SetDestination(zone.GetRandomPoint());
+        StartCoroutine(SaveCor(zone));
+    }
+
+    private IEnumerator SaveCor(SaveZone zone)
+    {
+        _animator.SetTrigger("IsWalk");
+
+        Vector3 point = zone.GetRandomPoint();
+
+        _agent.SetDestination(point);
 
         _isCollected = true;
 
@@ -107,10 +138,16 @@ public class HumanBehaviour : MonoBehaviour
         print("Collect");
 
         _player.OnHumanSave.RemoveListener(OnSave);
+
+        yield return new WaitUntil(() => Vector3.Distance(point, transform.position) <= 1.1f);
+
+        _animator.SetTrigger("IsIdle");
     }
 
     public void Zombification()
     {
+        _animator.SetTrigger("IsIdle");
+
         _isZombifying = true;
 
         _agent.ResetPath();
@@ -134,6 +171,8 @@ public class HumanBehaviour : MonoBehaviour
             _isZombifying = false;
 
             HumanPool.Instance.AddHuman(this);
+
+            _animator.SetTrigger("IsRun");
         }
         else
         {

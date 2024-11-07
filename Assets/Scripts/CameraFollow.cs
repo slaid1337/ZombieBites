@@ -28,4 +28,10 @@ public class CameraFollow : MonoBehaviour
     {
         offset = player.InverseTransformPoint(transform.position);
     }
+
+    [ContextMenu("Go to Offset")]
+    private void GoToOffset()
+    {
+        transform.position = player.transform.position + offset;
+    }
 }

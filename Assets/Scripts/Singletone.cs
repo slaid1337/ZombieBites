@@ -33,6 +33,7 @@ public class Singletone<T> : MonoBehaviour where T : MonoBehaviour
         else if (m_instance != this)
         {
             print(gameObject.name);
+            print(m_instance);
             Destroy(gameObject);
         }
         if (_dontDestroy)

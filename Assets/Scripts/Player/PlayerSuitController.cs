@@ -16,7 +16,14 @@ public class PlayerSuitController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (_startSuitValue <= 0) return;
+        if (_startSuitValue <= 0)
+        {
+            LevelController.Instance.GetResult(true);
+
+            enabled = false;
+
+            return;
+        }
         _suitValue -= _decreaseSpeed * Time.fixedDeltaTime;
         _circleIndicator.UpdateStatus(Serializer.Normalize(_suitValue, 0, _startSuitValue));
     }
