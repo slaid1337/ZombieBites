@@ -6,7 +6,14 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody rb;
     private InputSystemControlls.PlayerActions _input;
 
+    [SerializeField] private Transform _playerModel;
+    private bool _isMoving = false;
+
+    [SerializeField] private Animator _animator;
+
     public Vector3 MoveDirection;
+
+    public bool IsStop;
 
     private void Start()
     {
@@ -18,11 +25,26 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        if (IsStop)
+        {
+            rb.linearVelocity = Vector3.zero;
+            _isMoving = false;
+            return;
+        }
+
         Move();
     }
 
     private void Move()
     {
+        if (!_isMoving && MoveDirection != Vector3.zero)
+        {
+            _animator.ResetTrigger("IsIdle");
+            _animator.SetTrigger("IsRun");
+
+            _isMoving = true;
+        }
+
         Vector2 move = _input.Move.ReadValue<Vector2>();
 
         float moveHorizontal = move.x;
@@ -33,5 +55,14 @@ public class PlayerMovement : MonoBehaviour
         MoveDirection = movement;
 
         rb.linearVelocity = new Vector3(movement.x * moveSpeed, rb.linearVelocity.y, movement.z * moveSpeed);
+
+        _playerModel.LookAt(_playerModel.transform.position - movement);
+
+        if (MoveDirection == Vector3.zero)
+        {
+            _animator.SetTrigger("IsIdle");
+
+            _isMoving = false;
+        }
     }
 }

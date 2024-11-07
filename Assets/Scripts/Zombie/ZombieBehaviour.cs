@@ -49,6 +49,15 @@ public class ZombieBehaviour : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!LevelController.Instance.IsPlay())
+        {
+            _agent.isStopped = true;
+
+            return;
+        }
+
+        _agent.isStopped = false;
+
         if (_state == ZombieState.Healing || _state == ZombieState.Biting)
         {
             return;

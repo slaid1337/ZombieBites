@@ -11,6 +11,8 @@ public class PlayerController : Singletone<PlayerController>
     [SerializeField] private float _followRadius;
     [SerializeField] private float _saveRadius;
 
+    [SerializeField] private Animator _animator;
+
     private bool _isHealing;
     private float _healValue;
 
@@ -36,8 +38,23 @@ public class PlayerController : Singletone<PlayerController>
         _suitController.Init(_gameBalance.SuitStrength);
     }
 
+    private void Start()
+    {
+        LevelController.Instance.OnStop.AddListener(delegate
+        {
+            _moveController.IsStop = true;
+        });
+
+        LevelController.Instance.OnResume.AddListener(delegate
+        {
+            _moveController.IsStop = false;
+        });
+    }
+
     private void FixedUpdate()
     {
+        if (!LevelController.Instance.IsPlay()) return;
+
         if (_isTrySaving)
         {
             if (HumanPool.Instance.GetHumansCount() > HumanPool.Instance.GetDangerHumans().Count)
@@ -128,6 +145,15 @@ public class PlayerController : Singletone<PlayerController>
         _healingZombie.Heal();
 
         _statusCanvas.gameObject.SetActive(true);
+
+        _animator.SetTrigger("IsHit");
+
+        _moveController.IsStop = true;
+
+        Vector3 pos = _healingZombie.transform.position;
+        pos.y = _animator.transform.position.y;
+
+        _animator.transform.LookAt(pos);
     }
 
     public void StopHeal(bool isHealed)
@@ -139,6 +165,8 @@ public class PlayerController : Singletone<PlayerController>
         _healingZombie.StopHeal(isHealed);
 
         _statusCanvas.gameObject.SetActive(false);
+
+        _moveController.IsStop = false;
     }
 
     public void SaveHumans()

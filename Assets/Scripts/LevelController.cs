@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class LevelController : Singletone<LevelController>
 {
@@ -14,6 +15,9 @@ public class LevelController : Singletone<LevelController>
     [SerializeField] private TMP_Text _timerText;
 
     private bool _isPlaying;
+
+    public UnityEvent OnStop;
+    public UnityEvent OnResume;
 
     private void Start()
     {
@@ -38,12 +42,55 @@ public class LevelController : Singletone<LevelController>
 
             print("time gone");
 
+            GetResult();
+
             return;
         }
 
         _lvlTimer -= Time.fixedDeltaTime;
 
         _timerText.text = TimeSpan.FromSeconds(_lvlTimer).ToString("mm\\:ss");
+    }
+
+    public bool IsPlay()
+    {
+        return _isPlaying;
+    }
+
+    public void StopPlay()
+    {
+        _isPlaying = false;
+        OnStop?.Invoke();
+    }
+
+    public void ResumePlay()
+    {
+        _isPlaying = true;
+        OnResume?.Invoke();
+    }
+
+    public void GetResult()
+    {
+        StopPlay();
+
+        bool isWin = true;
+
+        if (_zombieCount / 2 > _humanCount) isWin = false;
+
+        EndMenu.Instance.Open(isWin, _humanCount, _zombieCount);
+    }
+
+    public void GetResult(bool isDead)
+    {
+        StopPlay();
+
+        bool isWin = true;
+
+        if (isDead) isWin = false;
+
+        if (_zombieCount / 2 > _humanCount) isWin = false;
+
+        EndMenu.Instance.Open(isWin, _humanCount, _zombieCount);
     }
 
     public void AddHuman()
@@ -54,7 +101,7 @@ public class LevelController : Singletone<LevelController>
 
         if (_humanCount == _zombieCount)
         {
-            _scoreText.text = "WIN";
+            GetResult();
         }
     }
 }
