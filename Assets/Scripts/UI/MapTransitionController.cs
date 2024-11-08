@@ -1,27 +1,36 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MapTransitionController : Singletone<MapTransitionController>
 {
-    [SerializeField] private Transform _player;
-    [SerializeField] private Transform _newTarget;
-    [SerializeField] private CameraFollow _cameraFollow;
-    [SerializeField] private GameObject _backButton;
+    public void OpenLevel(int lvl)
+    {
+        SceneTransition.Instance.OpenCanvas();
+
+        if (lvl == 0)
+        {
+            StartCoroutine(OpenCor("MainScene"));
+        }
+        else
+        {
+            StartCoroutine(OpenCor("LevelScene"));
+        }
+        
+    }
+
 
     public void OpenMap()
     {
-        _cameraFollow.player = _newTarget;
+        SceneTransition.Instance.OpenCanvas();
 
-        _player.gameObject.SetActive(false);
-        _newTarget.gameObject.SetActive(true);
-        _backButton.gameObject.SetActive(true);
+        StartCoroutine(OpenCor("MapScene"));
     }
 
-    public void CloseMap()
+    private IEnumerator OpenCor(string sceneName)
     {
-        _cameraFollow.player = _player;
+        yield return new WaitForSeconds(1.5f);
 
-        _player.gameObject.SetActive(true);
-        _newTarget.gameObject.SetActive(false);
-        _backButton.gameObject.SetActive(false);
+        SceneManager.LoadScene(sceneName);
     }
 }
