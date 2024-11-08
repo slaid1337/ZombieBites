@@ -45242,6 +45242,10 @@ PrefabInstance:
       propertyPath: _circleIndicator
       value: 
       objectReference: {fileID: 2020690419}
+    - target: {fileID: 1162061430024750639, guid: b7751e8ae15bda948b21a5b3670a98b6, type: 3}
+      propertyPath: _inverse
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 8104263809359062520, guid: b7751e8ae15bda948b21a5b3670a98b6, type: 3}
       propertyPath: m_LocalPosition.x
       value: -14.58

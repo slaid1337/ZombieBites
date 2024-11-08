@@ -231,10 +231,14 @@ public class PlayerController : Singletone<PlayerController>
 
     public void Damage(float damage)
     {
-        _suitController.DamageSuit(damage);
+        if (!LevelController.Instance.IsPlay()) return;
 
+        _suitController.DamageSuit(damage);
+        print("bite");
         if (_suitController.IsGone())
         {
+            LevelController.Instance.GetResult(true);
+            print("dead");
             OnDie?.Invoke();
         }
     }

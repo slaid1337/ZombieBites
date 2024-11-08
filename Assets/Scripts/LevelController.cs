@@ -28,6 +28,8 @@ public class LevelController : Singletone<LevelController>
         _lvlTimer = _lvlTime;
 
         _isPlaying = true;
+
+        
     }
 
     private void FixedUpdate()

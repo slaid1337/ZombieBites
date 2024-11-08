@@ -11,6 +11,8 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private Animator _animator;
 
+    [SerializeField] private int _inverse;
+
     public Vector3 MoveDirection;
 
     public bool IsStop;
@@ -56,7 +58,7 @@ public class PlayerMovement : MonoBehaviour
 
         rb.linearVelocity = new Vector3(movement.x * moveSpeed, rb.linearVelocity.y, movement.z * moveSpeed);
 
-        _playerModel.LookAt(_playerModel.transform.position - movement);
+        _playerModel.LookAt(_playerModel.transform.position + (movement * _inverse));
 
         if (MoveDirection == Vector3.zero)
         {

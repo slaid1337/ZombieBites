@@ -16,9 +16,11 @@ public class PlayerSuitController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!LevelController.Instance.IsPlay()) return;
+
         if (_startSuitValue <= 0)
         {
-            LevelController.Instance.GetResult(true);
+            //LevelController.Instance.GetResult(true);
 
             enabled = false;
 
