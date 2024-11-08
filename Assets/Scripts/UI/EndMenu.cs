@@ -63,6 +63,7 @@ public class EndMenu : Singletone<EndMenu>
     public void LoadHome()
     {
         SceneTransition.Instance.OpenCanvas();
+        Music.Instance.SetMenu();
 
         StartCoroutine(LoadHomeCor());
     }

@@ -2796,7 +2796,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 45624840304461193, guid: 2e4500bb93388004fa3a74fbde55fe72, type: 3}
       propertyPath: m_fontSize
-      value: 18
+      value: 17.85
+      objectReference: {fileID: 0}
+    - target: {fileID: 45624840304461193, guid: 2e4500bb93388004fa3a74fbde55fe72, type: 3}
+      propertyPath: m_fontSizeMin
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 910330384401250719, guid: 2e4500bb93388004fa3a74fbde55fe72, type: 3}
       propertyPath: _lvlIndex
@@ -2857,6 +2861,10 @@ PrefabInstance:
     - target: {fileID: 6842931382541998436, guid: 2e4500bb93388004fa3a74fbde55fe72, type: 3}
       propertyPath: m_Name
       value: sign sign toxic pillar
+      objectReference: {fileID: 0}
+    - target: {fileID: 7965530750014994410, guid: 2e4500bb93388004fa3a74fbde55fe72, type: 3}
+      propertyPath: m_Alpha
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

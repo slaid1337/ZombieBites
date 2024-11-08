@@ -16,6 +16,8 @@ public class ZombieBehaviour : MonoBehaviour
 
     [SerializeField] private Animator _animator;
 
+    [SerializeField] private AudioSource _audioSource;
+
     private NavMeshAgent _agent; // NavMeshAgent для перемещения зомби
     private ZombieHumanChange _skinChange;
 
@@ -231,6 +233,8 @@ public class ZombieBehaviour : MonoBehaviour
         _animator.SetTrigger("IsIdle");
         _agent.ResetPath();
         _agent.velocity = Vector3.zero;
+
+        _audioSource.Play();
 
         if (_roamCoroutine != null) 
         {

@@ -13,6 +13,8 @@ public class PlayerController : Singletone<PlayerController>
 
     [SerializeField] private Animator _animator;
 
+    [SerializeField] private AudioSource _audioSource;
+
     private bool _isHealing;
     private float _healValue;
 
@@ -181,6 +183,8 @@ public class PlayerController : Singletone<PlayerController>
 
             return;
         }
+
+        _audioSource.Play();
 
         print("save");
 
