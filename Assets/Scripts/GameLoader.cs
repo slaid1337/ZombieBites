@@ -7,7 +7,14 @@ public class GameLoader : Singletone<GameLoader>
 
     private void Start()
     {
-        OnLoaded();
+        if (CrazyGamesController.Instance.IsLoaded)
+        {
+            OnLoaded();
+        }
+        else
+        {
+            CrazyGamesController.Instance.OnLoad.AddListener(OnLoaded);
+        }
     }
 
     public void OnLoaded()
