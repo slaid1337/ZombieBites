@@ -36,6 +36,8 @@ public class ZombieBehaviour : MonoBehaviour
 
     private void Start()
     {
+        _player = PlayerController.Instance;
+
         _agent = GetComponent<NavMeshAgent>();
         _skinChange = GetComponent<ZombieHumanChange>();
 
