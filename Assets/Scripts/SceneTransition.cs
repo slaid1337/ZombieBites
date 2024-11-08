@@ -1,3 +1,4 @@
+using CrazyGames;
 using DG.Tweening;
 using UnityEngine;
 
@@ -17,10 +18,15 @@ public class SceneTransition : Singletone<SceneTransition>
     {
         _canvas.DOFade(1f, 1f);
         _canvas.blocksRaycasts = true;
+        CrazySDK.Game.GameplayStop();
     }
 
     public void CloseCanvas()
     {
-        _canvas.DOFade(0f, 1f).OnComplete(() => _canvas.blocksRaycasts = false);
+        _canvas.DOFade(0f, 1f).OnComplete(() => 
+        {
+            _canvas.blocksRaycasts = false;
+            CrazySDK.Game.GameplayStart();
+        });
     }
 }

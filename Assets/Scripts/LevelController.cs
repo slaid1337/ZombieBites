@@ -1,3 +1,4 @@
+using CrazyGames;
 using System;
 using TMPro;
 using UnityEngine;
@@ -61,12 +62,16 @@ public class LevelController : Singletone<LevelController>
     {
         _isPlaying = false;
         OnStop?.Invoke();
+
+        CrazySDK.Game.GameplayStop();
     }
 
     public void ResumePlay()
     {
         _isPlaying = true;
         OnResume?.Invoke();
+
+        CrazySDK.Game.GameplayStart();
     }
 
     public void GetResult()
@@ -89,6 +94,11 @@ public class LevelController : Singletone<LevelController>
         if (isDead) isWin = false;
 
         if (_zombieCount / 2 > _humanCount) isWin = false;
+
+        if (isWin)
+        {
+            CrazySDK.Game.HappyTime();
+        }
 
         EndMenu.Instance.Open(isWin, _humanCount, _zombieCount);
     }

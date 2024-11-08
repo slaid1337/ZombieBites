@@ -3,6 +3,7 @@ using DG.Tweening;
 using System.Collections;
 using UnityEngine.SceneManagement;
 using TMPro;
+using CrazyGames;
 
 public class EndMenu : Singletone<EndMenu>
 {
@@ -23,6 +24,8 @@ public class EndMenu : Singletone<EndMenu>
 
     public void Open(bool isWin, int score, int maxScore)
     {
+        CrazySDK.Game.GameplayStop();
+
         FadeBack.Instance.Open();
         _canvas.DOFade(1f, 1f);
         _canvas.blocksRaycasts = true;
@@ -41,7 +44,6 @@ public class EndMenu : Singletone<EndMenu>
 
             _scoreText.text = "Cured <color=\"red\">" + score + "/" + maxScore;
         }
-        
     }
 
     public void Restart()
