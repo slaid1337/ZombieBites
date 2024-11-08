@@ -15,10 +15,12 @@ public class MapTransitionController : Singletone<MapTransitionController>
         else if (lvl == 1)
         {
             StartCoroutine(OpenCor("TrainingLocation"));
+            Music.Instance.SetLevel();
         }
         else if ( lvl == 2)
         {
             StartCoroutine(OpenCor("LevelScene"));
+            Music.Instance.SetLevel();
         }
     }
 

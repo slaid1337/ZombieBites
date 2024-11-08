@@ -27,12 +27,15 @@ public class HumanBehaviour : MonoBehaviour
 
     private void Start()
     {
+        _player = PlayerController.Instance;
         _agent = GetComponent<NavMeshAgent>();
         _skinChange = GetComponent<ZombieHumanChange>();
     }
 
     private void OnEnable()
     {
+        _player = PlayerController.Instance;
+
         _player.OnHumanSave.AddListener(OnSave);
     }
 

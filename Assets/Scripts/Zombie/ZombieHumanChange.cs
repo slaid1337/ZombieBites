@@ -10,13 +10,14 @@ public class ZombieHumanChange : MonoBehaviour
 
     [SerializeField] ParticleSystem _particleSystem;
 
-    private ZombieBehaviour _zombieScript;
-    private HumanBehaviour _humanScript;
+    [SerializeField] private ZombieBehaviour _zombieScript;
+    [SerializeField] private HumanBehaviour _humanScript;
+
+    [SerializeField] private AudioSource _audioSource;
 
     private void Awake()
     {
-        _zombieScript = GetComponent<ZombieBehaviour>();
-        _humanScript = GetComponent<HumanBehaviour>();
+        
     }
 
     public void SwitchState(bool isZombie)
@@ -35,6 +36,8 @@ public class ZombieHumanChange : MonoBehaviour
             _zombieScript.SelectState();
 
             HumanPool.Instance.RemoveHuman(_humanScript);
+
+            _audioSource.Play();
         }
         else
         {
