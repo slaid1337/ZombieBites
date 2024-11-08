@@ -8,6 +8,8 @@ public class ZombieHumanChange : MonoBehaviour
     [SerializeField] private Collider _zombieCollider;
     [SerializeField] private Collider _humanCollider;
 
+    [SerializeField] ParticleSystem _particleSystem;
+
     private ZombieBehaviour _zombieScript;
     private HumanBehaviour _humanScript;
 
@@ -36,6 +38,8 @@ public class ZombieHumanChange : MonoBehaviour
         }
         else
         {
+            _particleSystem.Play();
+
             _zombie.SetActive(false);
             _human.SetActive(true);
 
