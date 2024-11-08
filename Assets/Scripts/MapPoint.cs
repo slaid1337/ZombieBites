@@ -12,7 +12,6 @@ public class MapPoint : MonoBehaviour
     {
         _camera = Camera.main;
 
-        
         Vector3 directionToCamera = _camera.transform.forward;
         
         Quaternion lookRotation = Quaternion.LookRotation(directionToCamera);

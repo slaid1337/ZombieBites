@@ -139,7 +139,7 @@ public class HumanBehaviour : MonoBehaviour
 
         _player.OnHumanSave.RemoveListener(OnSave);
 
-        yield return new WaitUntil(() => Vector3.Distance(point, transform.position) <= 1.1f);
+        yield return new WaitUntil(() => Vector3.Distance(point, transform.position) <= 2f);
 
         _animator.SetTrigger("IsIdle");
     }

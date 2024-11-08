@@ -147,6 +147,7 @@ public class PlayerController : Singletone<PlayerController>
         _statusCanvas.gameObject.SetActive(true);
 
         _animator.SetTrigger("IsHit");
+        _animator.ResetTrigger("IsRun");
 
         _moveController.IsStop = true;
 

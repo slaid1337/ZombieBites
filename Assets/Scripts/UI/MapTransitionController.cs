@@ -12,11 +12,14 @@ public class MapTransitionController : Singletone<MapTransitionController>
         {
             StartCoroutine(OpenCor("MainScene"));
         }
-        else
+        else if (lvl == 1)
+        {
+            StartCoroutine(OpenCor("TrainingLocation"));
+        }
+        else if ( lvl == 2) { }
         {
             StartCoroutine(OpenCor("LevelScene"));
         }
-        
     }
 
 

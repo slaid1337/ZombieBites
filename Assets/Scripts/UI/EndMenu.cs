@@ -55,6 +55,20 @@ public class EndMenu : Singletone<EndMenu>
     {
         yield return new WaitForSeconds(1f);
 
-        SceneManager.LoadScene("Map");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void LoadHome()
+    {
+        SceneTransition.Instance.OpenCanvas();
+
+        StartCoroutine(LoadHomeCor());
+    }
+
+    private IEnumerator LoadHomeCor()
+    {
+        yield return new WaitForSeconds(1f);
+
+        SceneManager.LoadScene("MainScene");
     }
 }
